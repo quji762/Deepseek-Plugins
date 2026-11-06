@@ -1,0 +1,18 @@
+# Logs and local scratch
+*.log
+npm-debug.log*
+
+# Node
+node_modules/
+pnpm-debug.log*
+
+# Editor and OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Local install targets (the installer writes outside the repo, but keep any
+# accidental local junction out of history)
+.local-plugins/

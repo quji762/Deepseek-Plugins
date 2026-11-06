@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Code typer",
+    "description": "Shows the code the agent is writing in a terminal-style window above the composer."
+  }
+}

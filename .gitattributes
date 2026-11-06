@@ -1,0 +1,8 @@
+# Normalize to LF in the repository so diffs stay stable across machines;
+# keep CRLF for PowerShell scripts, which Windows tooling expects.
+* text=auto eol=lf
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.png binary
+*.svg text

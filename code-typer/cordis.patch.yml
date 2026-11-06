@@ -1,0 +1,3 @@
+- insert:
+    - id: code-typer
+      name: '@local/code-typer'
