@@ -5,8 +5,8 @@
     "zh": "quji762 的 DSH 插件"
   },
   "description": {
-    "en": "Personal DeepSeek Harness plugins: a Retry settings section for per-provider retry policy, and a right-sidebar panel that shows the code the agent is writing.",
-    "zh": "个人 DeepSeek Harness 插件：设置界面的「重试」分区（在 GUI 里调各提供方的重试策略），以及实时显示 agent 正在写入代码的右侧栏面板。"
+    "en": "Personal DeepSeek Harness plugins: a right-sidebar panel that charts per-step token generation speed live, a Retry settings section for per-provider retry policy, and a right-sidebar panel that shows the code the agent is writing.",
+    "zh": "个人 DeepSeek Harness 插件：右侧栏实时绘制每一步模型生成 Token 速度曲线的面板，设置界面的「重试」分区（在 GUI 里调各提供方的重试策略），以及实时显示 agent 正在写入代码的右侧栏面板。"
   },
   "metadata": {
     "categories": {
@@ -40,6 +40,41 @@
     }
   },
   "plugins": [
+    {
+      "name": "@local/token-speed",
+      "title": {
+        "en": "Token Speed",
+        "zh": "Token 速度"
+      },
+      "description": {
+        "en": "A right-sidebar panel that charts each generation step's token speed as a live curve: the current speed, average/peak/total stats, a 3-minute sliding window, and a dashed live segment that moves while the model generates.",
+        "zh": "右侧栏面板，把每一步模型生成的 Token 速度画成实时曲线：当前速度、平均/峰值/累计统计、最近 3 分钟滑动窗口，以及生成中随模型输出延伸的虚线实时段。"
+      },
+      "author": "quji762",
+      "homepage": "https://github.com/quji762/Deepseek-Plugins",
+      "repository": {
+        "url": "https://github.com/quji762/Deepseek-Plugins",
+        "directory": "token-speed"
+      },
+      "metadata": {
+        "category": "ui",
+        "keywords": ["sidebar", "token", "speed", "streaming", "chart"],
+        "labels": ["sidebar"],
+        "sortKeys": { "updated": 1793997483 }
+      },
+      "versions": [
+        {
+          "version": "1.0.0",
+          "publishTimestamp": 1793997483,
+          "source": {
+            "type": "git",
+            "url": "https://github.com/quji762/Deepseek-Plugins",
+            "commit": "494f546d760ebdde94013577d32511958660716b",
+            "path": "token-speed"
+          }
+        }
+      ]
+    },
     {
       "name": "@local/llm-retry-settings",
       "title": {
