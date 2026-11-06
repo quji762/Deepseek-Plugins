@@ -8,6 +8,7 @@
 
 | 插件 | 作用 | 依赖 |
 |---|---|---|
+| [`token-speed`](token-speed/README.md) | 右侧栏「Token 速度」面板，实时绘制每一步模型生成的速度曲线 | 需宿主注册 HTTP 路由 |
 | [`code-typer`](code-typer/README.md) | 右侧栏「代码键入」面板，实时显示 agent 正在写入的代码 | 需宿主注册 HTTP 路由 |
 | [`llm-retry-settings`](llm-retry-settings/README.md) | 设置界面「重试」分区，GUI 里调各提供方的重试策略 | 只覆盖 pi-ai 路由 |
 
@@ -30,6 +31,7 @@ https://raw.githubusercontent.com/quji762/Deepseek-Plugins/main/market-index.jso
 ### 2. `dsh plugin add` 带 `#path:`
 
 ```powershell
+dsh plugin --profile desktop add "https://github.com/quji762/Deepseek-Plugins#path:token-speed"
 dsh plugin --profile desktop add "https://github.com/quji762/Deepseek-Plugins#path:llm-retry-settings"
 dsh plugin --profile desktop add "https://github.com/quji762/Deepseek-Plugins#path:code-typer"
 ```
@@ -122,6 +124,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File verify-plugins.ps1
 
 ```
 dsh-plugins/
+├── token-speed/             # 右侧栏「Token 速度」面板
 ├── code-typer/             # 右侧栏「代码键入」面板
 ├── llm-retry-settings/     # 设置界面「重试」分区
 ├── market-index.json       # 插件市场索引（发现页数据源）
@@ -134,5 +137,6 @@ dsh-plugins/
 
 ## 各插件文档
 
+- [token-speed](token-speed/README.md)
 - [code-typer](code-typer/README.md)
 - [llm-retry-settings](llm-retry-settings/README.md)

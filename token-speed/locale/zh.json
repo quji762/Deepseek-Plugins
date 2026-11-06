@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Token 速度",
+    "description": "在右侧栏面板中显示每一步模型生成的实时 Token 速度曲线。"
+  }
+}
