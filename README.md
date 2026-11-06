@@ -31,6 +31,13 @@ dsh plugin --profile desktop add "https://github.com/<你的用户名>/dsh-plugi
 
 支持的 spec 形式：registry 包名、绝对本地路径、git 地址（`https://github.com/...`、`git+https://...`、`git+ssh://...`、`github:user/repo` 等简写）、tarball。私有仓库用系统 git 凭据助手认证（DSH 在启动 pnpm 前会用 `git ls-remote` 探活，超时 5 秒）。
 
+**`#path:` 不能省略。** 这是 monorepo，仓库根没有 `package.json`。在设置 → 插件 的安装框里只填仓库地址（`https://github.com/<你>/Deepseek-Plugins.git`）会报「这个包没有声明组合包，不能作为插件管理」——因为 pnpm 把仓库根当成一个无清单的包装了进来。必须写成：
+
+```
+https://github.com/<你的用户名>/Deepseek-Plugins.git#path:llm-retry-settings
+https://github.com/<你的用户名>/Deepseek-Plugins.git#path:code-typer
+```
+
 **注意：锁文件会把 git 依赖钉到具体 commit。** 所以推了新代码之后，别的机器要重新 add 一次才能拿到更新（先 `remove` 再 `add`，因为 spec 已安装时会被 `already-installed` 拒绝）：
 
 ```powershell
