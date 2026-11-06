@@ -256,10 +256,14 @@ export function apply(ctx) {
     kind: 'exact',
     path: LIVE_PATH,
     resource(request) {
-      // Same-origin guard: browsers send this on every fetch, so a request
-      // without it did not come from the page. The listener is loopback-only.
+      // Cross-site guard. The app fetches this route over its own dsh-app://
+      // protocol, and that handler forwards neither sec-fetch-site nor an
+      // Origin, so an absent header must be allowed -- requiring it here
+      // rejected the app's own polling. What still has to be refused is a page
+      // on another origin reaching the loopback port, which does send
+      // sec-fetch-site: cross-site.
       const site = request.headers.get('sec-fetch-site');
-      if (site === null || site === 'cross-site') {
+      if (site === 'cross-site') {
         return new Response(JSON.stringify({ error: 'forbidden' }), {
           status: 403,
           headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
