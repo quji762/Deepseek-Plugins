@@ -1,0 +1,114 @@
+{
+  "format": 1,
+  "title": {
+    "en": "quji762's DSH Plugins",
+    "zh": "quji762 的 DSH 插件"
+  },
+  "description": {
+    "en": "Personal DeepSeek Harness plugins: a Retry settings section for per-provider retry policy, and a right-sidebar panel that shows the code the agent is writing.",
+    "zh": "个人 DeepSeek Harness 插件：设置界面的「重试」分区（在 GUI 里调各提供方的重试策略），以及实时显示 agent 正在写入代码的右侧栏面板。"
+  },
+  "metadata": {
+    "categories": {
+      "models": {
+        "title": { "en": "Models", "zh": "模型" }
+      },
+      "ui": {
+        "title": { "en": "Interface", "zh": "界面" }
+      }
+    },
+    "labels": {
+      "settings": {
+        "title": { "en": "Settings", "zh": "设置" }
+      },
+      "sidebar": {
+        "title": { "en": "Sidebar", "zh": "侧边栏" }
+      },
+      "gui": {
+        "title": { "en": "No config file", "zh": "免改配置" }
+      }
+    },
+    "sortKeys": {
+      "name": {
+        "title": { "en": "Name", "zh": "名称" },
+        "order": "asc"
+      },
+      "updated": {
+        "title": { "en": "Recently updated", "zh": "最近更新" },
+        "order": "desc"
+      }
+    }
+  },
+  "plugins": [
+    {
+      "name": "@local/llm-retry-settings",
+      "title": {
+        "en": "Retry Settings",
+        "zh": "重试设置"
+      },
+      "description": {
+        "en": "Adds a Retry section to Settings, where each pi-ai provider route's retry policy (mode, retry count, delays, jitter) is edited in the GUI instead of cordis.patch.yml.",
+        "zh": "在设置界面增加「重试」分区，可在 GUI 里编辑每条 pi-ai 提供方路由的重试策略（模式、重试次数、间隔、抖动），不必再手改 cordis.patch.yml。"
+      },
+      "author": "quji762",
+      "homepage": "https://github.com/quji762/Deepseek-Plugins",
+      "repository": {
+        "url": "https://github.com/quji762/Deepseek-Plugins",
+        "directory": "llm-retry-settings"
+      },
+      "metadata": {
+        "category": "models",
+        "keywords": ["retry", "backoff", "llm", "provider", "settings"],
+        "labels": ["settings", "gui"],
+        "sortKeys": { "updated": 1793994492 }
+      },
+      "versions": [
+        {
+          "version": "1.0.0",
+          "publishTimestamp": 1793994492,
+          "source": {
+            "type": "git",
+            "url": "https://github.com/quji762/Deepseek-Plugins",
+            "commit": "25680738208d94ac9131fd45693cecb1d76beeab",
+            "path": "llm-retry-settings"
+          }
+        }
+      ]
+    },
+    {
+      "name": "@local/code-typer",
+      "title": {
+        "en": "Code Typer",
+        "zh": "代码键入"
+      },
+      "description": {
+        "en": "A right-sidebar panel that shows, live, the code the agent is writing: tool-call arguments stream in as the model types, and the last write survives a reload.",
+        "zh": "右侧栏面板，实时显示 agent 正在写入的代码：模型生成时工具调用参数逐字流入，刷新后仍保留最近一次写入。"
+      },
+      "author": "quji762",
+      "homepage": "https://github.com/quji762/Deepseek-Plugins",
+      "repository": {
+        "url": "https://github.com/quji762/Deepseek-Plugins",
+        "directory": "code-typer"
+      },
+      "metadata": {
+        "category": "ui",
+        "keywords": ["sidebar", "code", "streaming", "live"],
+        "labels": ["sidebar"],
+        "sortKeys": { "updated": 1793994492 }
+      },
+      "versions": [
+        {
+          "version": "1.0.0",
+          "publishTimestamp": 1793994492,
+          "source": {
+            "type": "git",
+            "url": "https://github.com/quji762/Deepseek-Plugins",
+            "commit": "25680738208d94ac9131fd45693cecb1d76beeab",
+            "path": "code-typer"
+          }
+        }
+      ]
+    }
+  ]
+}
