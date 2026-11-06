@@ -154,7 +154,6 @@ export const inject = ['sessionProjections', 'webServer'];
  * @param ctx - plugin context owning the listeners and route.
  */
 export function apply(ctx) {
-  ctx.logger.info('code-typer: host half activating');
   const drafts = new Map();
   const pending = new Map();
   let revision = 0;
@@ -246,8 +245,6 @@ export function apply(ctx) {
     ctx.logger.warn(`code-typer: durable projection unavailable: ${String(error)}`);
   });
 
-  ctx.logger.info('code-typer: registering live route');
-
   // webServer comes from the `inject` declaration above, so cordis activates
   // this entry only once the webserver entry has provided the service. Reading
   // it with ctx.get would not work: the two entries are siblings under the
@@ -284,5 +281,4 @@ export function apply(ctx) {
       });
     },
   }), 'code-typer: live route');
-  ctx.logger.info(`code-typer: live route registered at ${LIVE_PATH}`);
 }

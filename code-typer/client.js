@@ -83,7 +83,8 @@ window.__ModuleLoader__.load({
     /** Poll the Host's latest live draft (the model's partially-typed code). */
     function useLiveDraft(poll) {
       const [draft, setDraft] = React.useState(null);
-      let warned = false;
+      /** Status codes already reported, so a persistent failure is one line. */
+      const warned = new Set();
       React.useEffect(() => {
         if (!poll) return undefined;
         let disposed = false;
@@ -106,15 +107,13 @@ window.__ModuleLoader__.load({
               ...(controller === null ? {} : { signal: controller.signal }),
             });
             if (!response.ok) {
-              // 404 means the Host route is not registered (plugin inactive or
-              // a stale module generation); keep polling, it may appear.
-              if (response.status === 404) {
-                if (!warned) {
-                  warned = true;
-                  console.warn('[code-typer] live route returned 404; the Host half is not serving /code-typer/live');
-                }
-              } else {
-                console.warn('[code-typer] live route status', response.status);
+              // A failure here means the Host half is not serving the route:
+              // 404 when the plugin is inactive or a stale module generation is
+              // loaded, anything else when the route refuses the request. Both
+              // are worth exactly one line, not one per poll.
+              if (!warned.has(response.status)) {
+                warned.add(response.status);
+                console.warn(`[code-typer] live route returned ${response.status}; the Host half is not serving drafts`);
               }
               schedule();
               return;
