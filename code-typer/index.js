@@ -147,7 +147,7 @@ const definition = {
   wire: { viewSchema: jsonSchema, view: (state) => state.payload, summary: false },
 };
 
-export const inject = ['sessionProjections'];
+export const inject = ['sessionProjections', 'webServer'];
 
 /**
  * Install the live stream capture plus its loopback route.
@@ -246,14 +246,13 @@ export function apply(ctx) {
     ctx.logger.warn(`code-typer: durable projection unavailable: ${String(error)}`);
   });
 
-  const server = ctx.get('webServer');
-  if (server === undefined) {
-    ctx.logger.warn('code-typer: no webServer service; the live code window will not open');
-    return;
-  }
   ctx.logger.info('code-typer: registering live route');
 
-  ctx.effect(() => server.register({
+  // webServer comes from the `inject` declaration above, so cordis activates
+  // this entry only once the webserver entry has provided the service. Reading
+  // it with ctx.get would not work: the two entries are siblings under the
+  // profile root, and get searches only the current context and its ancestors.
+  ctx.effect(() => ctx.webServer.register({
     kind: 'exact',
     path: LIVE_PATH,
     resource(request) {
