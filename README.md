@@ -1,93 +1,86 @@
 # dsh-plugins
 
-我自己的 DeepSeek Harness 本地插件集合。一个仓库管所有本地插件，用 git 在多台电脑间同步。
+我自己的 DeepSeek Harness 插件集合。一个仓库管所有插件，用 git 在多台电脑间同步。
 
 这些插件**不修改 DSH 任何官方文件**，升级 DSH 不会与它们冲突。
 
-## 仓库结构
+## 收录的插件
+
+| 插件 | 作用 | 依赖 |
+|---|---|---|
+| [`code-typer`](code-typer/README.md) | 右侧栏「代码键入」面板，实时显示 agent 正在写入的代码 | 需宿主注册 HTTP 路由 |
+| [`llm-retry-settings`](llm-retry-settings/README.md) | 设置界面「重试」分区，GUI 里调各提供方的重试策略 | 只覆盖 pi-ai 路由 |
+
+## 安装
+
+三种方式，按推荐顺序。**任选一种，不要混用**（混用会让 Junction 和 pnpm 的 `node_modules` 路径冲突）。
+
+### 1. 插件索引 / 发现页（最省事）
+
+仓库带了一份 [market-index.json](market-index.json)（DSH 插件市场索引格式 1）。在 **设置 → 插件 → 发现** 标签页添加这个地址：
 
 ```
-dsh-plugins/
-├── code-typer/            # 右侧栏「代码键入」面板：实时显示 agent 正在写的代码
-├── llm-retry-settings/    # 设置界面「重试」分区：GUI 里调各提供方的重试策略
-├── tools/
-│   └── install.ps1        # 备用安装脚本（离线 / 本地路径场景）
-├── .gitattributes         # 统一 LF，避免多机换行符抖动
-└── README.md
+https://raw.githubusercontent.com/quji762/Deepseek-Plugins/main/market-index.json
 ```
 
-每个子目录是一个独立的插件包（根目录即包，`package.json` + `index.js` 宿主半边 + `client.js` 浏览器半边 + 自带的 `cordis.patch.yml`）。
+添加后列出两张卡片，点一下即完成全部登记（写依赖、加 bundles、pnpm 硬链接、HMR 重载）。前提是 DSH 里开启了「自定义插件索引」这个实验性开关。
 
-## 安装：从 git 仓库（首选）
+私有仓库的话 `raw.githubusercontent.com` 需要认证，此路不通，用下面的方式。
 
-DSH 的插件管理器直接把 spec 转交 pnpm，而 pnpm 支持 git 依赖，**包括仓库子目录**（`#path:` 语法）。所以 monorepo 可以直接用，不需要拆成多个仓库：
+### 2. `dsh plugin add` 带 `#path:`
 
 ```powershell
-dsh plugin --profile desktop add "https://github.com/<你的用户名>/dsh-plugins#path:llm-retry-settings"
-dsh plugin --profile desktop add "https://github.com/<你的用户名>/dsh-plugins#path:code-typer"
+dsh plugin --profile desktop add "https://github.com/quji762/Deepseek-Plugins#path:llm-retry-settings"
+dsh plugin --profile desktop add "https://github.com/quji762/Deepseek-Plugins#path:code-typer"
 ```
 
-一条命令搞定全部登记：写入 `package.json` 的依赖、加入 `dsh.profile.bundles`、pnpm 硬链接到 `node_modules`、HMR 重载。无需 Junction、无需手动改配置、无需本脚本。
+支持的 spec 形式：registry 包名、绝对本地路径、git 地址（`https://`、`git+https://`、`git+ssh://`、`github:user/repo` 简写）、tarball。私有仓库走系统 git 凭据助手（DSH 启动 pnpm 前会用 `git ls-remote` 探活，超时 5 秒）。
 
-支持的 spec 形式：registry 包名、绝对本地路径、git 地址（`https://github.com/...`、`git+https://...`、`git+ssh://...`、`github:user/repo` 等简写）、tarball。私有仓库用系统 git 凭据助手认证（DSH 在启动 pnpm 前会用 `git ls-remote` 探活，超时 5 秒）。
+### 3. 本地绝对路径（开发中的插件）
 
-**`#path:` 不能省略。** 这是 monorepo，仓库根没有 `package.json`。在设置 → 插件 的安装框里只填仓库地址（`https://github.com/<你>/Deepseek-Plugins.git`）会报「这个包没有声明组合包，不能作为插件管理」——因为 pnpm 把仓库根当成一个无清单的包装了进来。必须写成：
-
-```
-https://github.com/<你的用户名>/Deepseek-Plugins.git#path:llm-retry-settings
-https://github.com/<你的用户名>/Deepseek-Plugins.git#path:code-typer
+```powershell
+dsh plugin --profile desktop add "E:\Documents\deepseek-harness\default-workspace\dsh-plugins\llm-retry-settings"
 ```
 
-**注意：锁文件会把 git 依赖钉到具体 commit。** 所以推了新代码之后，别的机器要重新 add 一次才能拿到更新（先 `remove` 再 `add`，因为 spec 已安装时会被 `already-installed` 拒绝）：
+改代码后重启 DSH 即可生效，适合边改边试。
+
+## 要点
+
+这几条都是实际踩过的坑，按重要性排：
+
+**1. `#path:` 不能省略。** 这是 monorepo，仓库根没有 `package.json`。安装框里只填仓库地址会报「这个包没有声明组合包，不能作为插件管理」——pnpm 把仓库根当成一个无清单的包装了进来。必须写成 `...#path:<子目录>`。
+
+**2. git 依赖被锁文件钉在具体 commit 上。** 推了新代码后，别的机器要 `remove` 再 `add` 才能拿到更新（spec 已安装时会被 `already-installed` 拒绝）：
 
 ```powershell
 dsh plugin --profile desktop remove @local/llm-retry-settings
-dsh plugin --profile desktop add "https://github.com/<你的用户名>/dsh-plugins#path:llm-retry-settings"
+dsh plugin --profile desktop add "https://github.com/quji762/Deepseek-Plugins#path:llm-retry-settings"
 ```
 
-## 安装：用脚本（备用）
+**3. 改完插件要同步索引里的 commit。** 索引校验器**不核对**索引写的 `commit` 是否与包内容一致（这是它文档写明的限制）。漏了同步，发现页装到的就是旧 commit。索引在 [market-index.json](market-index.json)，两个插件各有一个 `source.commit`。
 
-不想走 git（比如仓库还没推上去、或在局域网里）时用脚本，幂等可重复执行：
+**4. `llm-retry-settings` 只覆盖 pi-ai 路由。** 它编辑 `llm-pi-ai` 的 `providers.<路由>.retryPolicy`；DeepSeek 官方路线（`dsh-llm-deepseek-api-key`）的 `retryPolicy` 在路由顶层而非 `providers` 下，需要另加一张卡片。只用官方路线的话，「重试」分区会显示"尚未配置任何提供方路由"。
+
+**5. 推送时跟着代理状态走。** git 全局配了 `http.proxy` 时代理软件没开会直接失败，用 `-c http.proxy= -c https.proxy=` 绕过；代理开了则直连可能被阻断，用默认配置。本仓库两种都遇到过。
+
+## 更新
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File tools\install.ps1                              # 装全部
-powershell -NoProfile -ExecutionPolicy Bypass -File tools\install.ps1 -Plugin llm-retry-settings   # 只装一个
+git pull                       # 在其他机器上
+dsh plugin --profile desktop remove @local/<插件名>
+dsh plugin --profile desktop add "<仓库地址>#path:<目录名>"
 ```
 
-两种模式：
-
-| 模式 | 命令 | Junction 指向 | 更新方式 |
-|---|---|---|---|
-| copy（默认） | `tools\install.ps1` | `~/.dsh/local-plugins/<插件>` | `git pull` 后**重跑脚本** |
-| in-place | `tools\install.ps1 -InPlace` | 这个 clone 里的工作副本 | `git pull` 即生效 |
-
-copy 模式更稳（删掉 clone 不影响 DSH）；in-place 适合频繁迭代。改 `client.js` 只需刷新浏览器页面，改 `index.js` / `package.json` 需要重启 DSH。
-
-**两种安装方式不要混用**：git 安装会把包放进 pnpm 的 `node_modules/.pnpm`，而脚本建的是 Junction，路径冲突。要换方式先卸掉原来的。
-
-## 多台电脑同步（git 方式）
-
-```powershell
-# 每台电脑第一次
-dsh plugin --profile desktop add "https://github.com/<你>/dsh-plugins#path:llm-retry-settings"
-dsh plugin --profile desktop add "https://github.com/<你>/dsh-plugins#path:code-typer"
-
-# 推更新后（在改动机器上）
-git push
-# 在其他机器上
-dsh plugin --profile desktop remove @local/llm-retry-settings
-dsh plugin --profile desktop add "https://github.com/<你>/dsh-plugins#path:llm-retry-settings"
-```
-
-profile 名不是 `desktop` 时把 `--profile` 换掉。另一台电脑需要已经装好 DSH 并至少跑过一次（profile 目录存在）。
+改 `client.js` 只需刷新浏览器页面；改 `index.js` / `package.json` 需要重启 DSH。
 
 ## 新增一个插件
 
-1. 在仓库根新建目录，放入 `package.json`（`name` 必须是 `@local/xxx` 这种带作用域的名字）、`index.js`、`client.js`、`cordis.patch.yml`
+1. 仓库根新建目录，放入 `package.json`、`index.js`、`client.js`、`cordis.patch.yml`
 2. `git commit && git push`
-3. `dsh plugin --profile desktop add "<仓库地址>#path:<新目录名>"`
+3. 在 [market-index.json](market-index.json) 的 `plugins` 数组加一条（`name`、`source.path`、`source.commit` 都要有）
+4. 用 DSH 自带的校验器验证后再推一次
 
-`package.json` 里声明客户端半边的最小形态：
+`package.json` 的最小形态：
 
 ```json
 {
@@ -110,10 +103,34 @@ profile 名不是 `desktop` 时把 `--profile` 换掉。另一台电脑需要已
 ## 卸载
 
 ```powershell
-dsh plugin --profile desktop remove @local/llm-retry-settings
+dsh plugin --profile desktop remove @local/code-typer
 ```
 
-会同时移除依赖、取消 bundles 勾选，并卸载模块。脚本方式装的还要额外删掉 `~/.dsh/local-plugins/<插件>`。
+同时移除依赖、取消 bundles 勾选、卸载模块。
+
+## 排障
+
+装完不确定是否生效，跑一遍：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File verify-plugins.ps1
+```
+
+逐项检查：依赖是否登记、bundle 是否列出、`client.js` 能否解析、锁文件是否记录。它会告诉你缺哪一项，以及对应的修复命令。
+
+## 目录结构
+
+```
+dsh-plugins/
+├── code-typer/             # 右侧栏「代码键入」面板
+├── llm-retry-settings/     # 设置界面「重试」分区
+├── market-index.json       # 插件市场索引（发现页数据源）
+├── verify-plugins.ps1      # 安装状态校验
+├── .gitattributes          # 统一 LF，*.ps1 保持 CRLF
+└── README.md
+```
+
+每个子目录是独立的插件包：`package.json` + `index.js`（宿主半边）+ `client.js`（浏览器半边）+ 自带的 `cordis.patch.yml`（负责挂载条目）。
 
 ## 各插件文档
 
