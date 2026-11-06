@@ -59,8 +59,7 @@ foreach ($dir in $pluginDirs) {
     Write-Host "  [MISS] not in dsh.profile.bundles" -ForegroundColor Red; $problems += 1
   }
 
-  $localName = $name -split '/', 2 | Select-Object -Last 1
-  $clientPath = Join-Path $profileDir "node_modules\$localName\client.js"
+  $clientPath = Join-Path $profileDir "node_modules\$name\client.js"
   if (Test-Path -LiteralPath $clientPath) {
     Write-Host "  [ok]   client bundle resolves" -ForegroundColor Green
   } else {
@@ -80,6 +79,6 @@ if ($problems -eq 0) {
 } else {
   Write-Host "$problems problem(s) -- reinstall with:" -ForegroundColor Yellow
   Write-Host "  dsh plugin --profile $Profile remove <package>"
-  Write-Host "  dsh plugin --profile $Profile add `<repo>#path:<plugin-dir>`"
+  Write-Host "  dsh plugin --profile $Profile add <repo>#path:<plugin-dir>"
   exit 1
 }
